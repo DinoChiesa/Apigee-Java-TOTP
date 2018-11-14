@@ -7,17 +7,7 @@ With this callout, API Proxies can require users to generate and send a TOTP wit
 
 This callout produces or verifies the TOTP. It relies on [a TOTP library from warren strange](https://github.com/wstrange/GoogleAuth/), implemented based on code from the Google Authenticator app.
 
-## Disclaimer
-
-This example is not an official Google product, nor is it part of an official Google product.
-
-## License
-
-This material is copyright 2018, Google LLC.
-and is licensed under the Apache 2.0 license. See the [LICENSE](LICENSE) file.
-
 This code is open source. You don't need to compile it in order to use it.
-
 
 
 ## Configuration
@@ -130,6 +120,22 @@ Connection: keep-alive
 NB: This test works by passing a "fake time" to the policy to use in place of "now."
 Don't use the `fake-time-seconds` property in production.
 
+```
+
+## Disclaimer
+
+This example is not an official Google product, nor is it part of an official Google product.
+
+## License
+
+This material is copyright 2018, Google LLC.
+and is licensed under the Apache 2.0 license. See the [LICENSE](LICENSE) file.
+
+## Building
+
+```
+cd callout
+mvn clean package
 ```
 
 ## Status
