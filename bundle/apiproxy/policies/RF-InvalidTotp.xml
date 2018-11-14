@@ -1,0 +1,16 @@
+<RaiseFault name='RF-InvalidTotp'>
+  <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+  <FaultResponse>
+    <Set>
+      <Payload contentType='application/json'>{
+  "error" : {
+    "code" : 401.01,
+    "message" : "unauthorized. The TOTP does not match."
+  }
+}
+</Payload>
+      <StatusCode>401</StatusCode>
+      <ReasonPhrase>Unauthorized</ReasonPhrase>
+    </Set>
+  </FaultResponse>
+</RaiseFault>

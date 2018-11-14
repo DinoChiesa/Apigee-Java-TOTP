@@ -75,21 +75,23 @@ If the callout fails for some reason, such as misconfiguration, these variables 
    ```
 
 
-## Example
+## Examples
+
+### Generating a code
 
 See the attached [bundle](./bundle) for a working API Proxy.
-To use it, deploy it to any org and environment, then invoke it like this:
+To use it, deploy it to any org and environment, then invoke it to generate a TOTP like this:
 
 ```
 ORG=myorg
 ENV=myenv
-curl -i https://$ORG-$ENV.apigee.net/totp/t1
+curl -i https://$ORG-$ENV.apigee.net/totp/generate
 ```
 
 You should see a code upon output:
 
 ```
-$ curl -i https://$ORG-$ENV.apigee.net/totp/t1
+$ curl -i https://$ORG-$ENV.apigee.net/totp/generate
 HTTP/1.1 200 OK
 Date: Wed, 14 Nov 2018 21:48:24 GMT
 Content-Type: application/json
@@ -103,6 +105,61 @@ Connection: keep-alive
 ```
 
 Obviously your code will vary.  The key used here is a contrived secret key.
+
+
+### Verifying codes
+
+Scan this barcode with an authenticator app on your mobile device:
+
+![barcode](./images/TOTP-Proxy-Example-QR-Code.png "Barcode for Example")
+
+This will generate codes that you can verify with this proxy.
+
+Send a verification request like this: 
+
+```
+curl -i https://$ORG-$ENV.apigee.net/totp/verify?totp=XXXXX
+```
+
+Replace the xxxx with the generated code shown in your mobile device app.
+
+Exmple success case:
+```
+$ curl -i https://$ORG-$ENV.apigee.net/totp/verify?totp=376411
+HTTP/1.1 200 OK
+Date: Wed, 14 Nov 2018 23:21:05 GMT
+Content-Type: application/json
+Content-Length: 21
+Connection: keep-alive
+
+{
+  "status" : "ok"
+}
+```
+
+Example rejection case:
+
+```
+$ curl -i https://$ORG-$ENV.apigee.net/totp/verify?totp=376432
+HTTP/1.1 401 Unauthorized
+Date: Wed, 14 Nov 2018 23:21:10 GMT
+Content-Type: application/json
+Content-Length: 100
+Connection: keep-alive
+
+{
+  "error" : {
+    "code" : 401.01,
+    "message" : "unauthorized. The TOTP does not match."
+  }
+}
+
+```
+
+
+
+
+### RFC6238 Test Vectors
 
 To test the values from the RFC6238 spec, you can `GET
 /rfc6238test/sha{1,256,512}` .  Pass one of the well known time values.  The

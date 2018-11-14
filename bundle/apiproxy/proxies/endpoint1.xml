@@ -32,7 +32,7 @@
 
   <Flows>
 
-    <Flow name="flow1">
+    <Flow name="generate">
       <Request>
         <Step>
           <Name>AM-Variables</Name>
@@ -43,17 +43,42 @@
       </Request>
       <Response>
         <Step>
-          <Name>AM-Response</Name>
+          <Name>AM-GenerateResponse</Name>
         </Step>
       </Response>
-      <Condition>(proxy.pathsuffix MatchesPath "/t1") and (request.verb = "GET")</Condition>
+      <Condition>(proxy.pathsuffix MatchesPath "/generate") and (request.verb = "GET")</Condition>
     </Flow>
 
-    <Flow name="flow2">
+    <Flow name="verify">
+      <Request>
+        <Step>
+          <Condition>request.queryparam.totp = null</Condition>
+          <Name>RF-InvalidRequestMissingTotp</Name>
+        </Step>
+        <Step>
+          <Name>AM-Variables</Name>
+        </Step>
+        <Step>
+          <Name>Java-TOTP-1</Name>
+        </Step>
+        <Step>
+          <Condition>totp_code != request.queryparam.totp</Condition>
+          <Name>RF-InvalidTotp</Name>
+        </Step>
+      </Request>
+      <Response>
+        <Step>
+          <Name>AM-VerifyResponse</Name>
+        </Step>
+      </Response>
+      <Condition>(proxy.pathsuffix MatchesPath "/verify") and (request.verb = "GET")</Condition>
+    </Flow>
+
+    <Flow name="test-sha1">
       <Request>
         <Step>
           <Condition>request.queryparam.faketime = null</Condition>
-          <Name>RF-InvalidRequestMissingQuery</Name>
+          <Name>RF-InvalidRequestMissingFakeTime</Name>
         </Step>
         <Step>
           <Name>AM-Variables</Name>
@@ -64,17 +89,17 @@
       </Request>
       <Response>
         <Step>
-          <Name>AM-Response</Name>
+          <Name>AM-GenerateResponse</Name>
         </Step>
       </Response>
       <Condition>(proxy.pathsuffix MatchesPath "/rfc6238test/sha1") and (request.verb = "GET")</Condition>
     </Flow>
 
-    <Flow name="flow3">
+    <Flow name="test-sha256">
       <Request>
         <Step>
           <Condition>request.queryparam.faketime = null</Condition>
-          <Name>RF-InvalidRequestMissingQuery</Name>
+          <Name>RF-InvalidRequestMissingFakeTime</Name>
         </Step>
         <Step>
           <Name>AM-Variables</Name>
@@ -85,17 +110,17 @@
       </Request>
       <Response>
         <Step>
-          <Name>AM-Response</Name>
+          <Name>AM-GenerateResponse</Name>
         </Step>
       </Response>
       <Condition>(proxy.pathsuffix MatchesPath "/rfc6238test/sha256") and (request.verb = "GET")</Condition>
     </Flow>
 
-    <Flow name="flow4">
+    <Flow name="test-sha512">
       <Request>
         <Step>
           <Condition>request.queryparam.faketime = null</Condition>
-          <Name>RF-InvalidRequestMissingQuery</Name>
+          <Name>RF-InvalidRequestMissingFakeTime</Name>
         </Step>
         <Step>
           <Name>AM-Variables</Name>
@@ -106,7 +131,7 @@
       </Request>
       <Response>
         <Step>
-          <Name>AM-Response</Name>
+          <Name>AM-GenerateResponse</Name>
         </Step>
       </Response>
       <Condition>(proxy.pathsuffix MatchesPath "/rfc6238test/sha512") and (request.verb = "GET")</Condition>

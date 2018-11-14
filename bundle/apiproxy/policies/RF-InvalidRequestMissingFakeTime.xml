@@ -1,4 +1,4 @@
-<RaiseFault name='RF-InvalidRequestMissingQuery'>
+<RaiseFault name='RF-InvalidRequestMissingFakeTime'>
   <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
   <FaultResponse>
     <Set>
@@ -9,8 +9,8 @@
   }
 }
 </Payload>
-      <StatusCode>404</StatusCode>
-      <ReasonPhrase>Not Found</ReasonPhrase>
+      <StatusCode>400</StatusCode>
+      <ReasonPhrase>Bad Request</ReasonPhrase>
     </Set>
   </FaultResponse>
 </RaiseFault>
