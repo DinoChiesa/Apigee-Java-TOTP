@@ -115,7 +115,10 @@ Scan this barcode with an authenticator app on your mobile device:
 
 ![barcode](./images/TOTP-Proxy-Example-QR-Code.png "Barcode for Example")
 
-This will generate codes that you can verify with this proxy.
+This barcode was generated via [this link](https://www.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=otpauth%3A%2F%2Ftotp%2FTOTP-Proxy-example%3Fsecret%3DIFBEGRCFIZDUQMJSGM2DKNRXHA4TA%26issuer%3Dcommunity.apigee.com).  It uses as the secret, "ABCDEFGH1234567890".
+
+After you scan this barcode, the authenticator app will generate codes under the
+label "TOTP-Proxy-example", that you can verify with this proxy.
 
 Send a verification request like this:
 
@@ -123,7 +126,7 @@ Send a verification request like this:
 curl -i https://$ORG-$ENV.apigee.net/totp/verify?totp=XXXXX
 ```
 
-Replace the xxxx with the generated code shown in your mobile device app under "TOTP-Proxy-example".
+Replace the xxxx with the generated code shown in your mobile device app.
 
 Example success case:
 ```
