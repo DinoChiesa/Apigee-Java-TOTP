@@ -57,7 +57,7 @@ If the callout fails for some reason, such as misconfiguration, these variables 
 ## Using the Policy
 
 1. It might be a good idea to use the consumer app "secret key" as the key for
-   the OTP.  To do that , you'd need to precede this policy with a VerifyApiKey
+   the OTP. To do that, you'd need to precede this policy with a VerifyApiKey
    or similar, so that you can obtain the secret key corresponding to the
    consumer key.
 
@@ -73,7 +73,6 @@ If the callout fails for some reason, such as misconfiguration, these variables 
        <Name>RaiseFault-TOTPInvalid</Name>
      </Step>
    ```
-
 
 ## Examples
 
@@ -107,58 +106,6 @@ Connection: keep-alive
 ```
 
 Obviously your code will vary.  The key used here is a contrived secret key.
-
-
-### Verifying codes
-
-Scan this barcode with an authenticator app on your mobile device:
-
-![barcode](./images/TOTP-Proxy-Example-QR-Code.png "Barcode for Example")
-
-This will generate codes that you can verify with this proxy.
-
-Send a verification request like this:
-
-```
-curl -i https://$ORG-$ENV.apigee.net/totp/verify?totp=XXXXX
-```
-
-Replace the xxxx with the generated code shown in your mobile device app under "TOTP-Proxy-example".
-
-Example success case:
-```
-$ curl -i https://$ORG-$ENV.apigee.net/totp/verify?totp=376411
-HTTP/1.1 200 OK
-Date: Wed, 14 Nov 2018 23:21:05 GMT
-Content-Type: application/json
-Content-Length: 21
-Connection: keep-alive
-
-{
-  "status" : "ok"
-}
-```
-
-Example rejection case:
-
-```
-$ curl -i https://$ORG-$ENV.apigee.net/totp/verify?totp=376432
-HTTP/1.1 401 Unauthorized
-Date: Wed, 14 Nov 2018 23:21:10 GMT
-Content-Type: application/json
-Content-Length: 100
-Connection: keep-alive
-
-{
-  "error" : {
-    "code" : 401.01,
-    "message" : "unauthorized. The TOTP does not match."
-  }
-}
-
-```
-
-
 
 
 ### RFC6238 Test Vectors
@@ -196,6 +143,107 @@ NB: This test works by passing a "fake time" to the policy to use in place of
 "now," and by using a well-known secret key. Don't use the `fake-time-seconds`
 property in production, and don't reuse the well-known secret key. Those things
 are expected to be used only for testing.
+
+
+### Verifying codes
+
+Scan this barcode with an authenticator app on your mobile device:
+
+![barcode](./images/TOTP-Proxy-Example-QR-Code.png "Barcode for Example")
+
+This barcode was generated via [this link](https://www.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=otpauth%3A%2F%2Ftotp%2FTOTP-Proxy-example%3Fsecret%3DIFBEGRCFIZDUQMJSGM2DKNRXHA4TA%26issuer%3Dcommunity.apigee.com).  It uses as the secret, "ABCDEFGH1234567890".
+
+After you scan this barcode, the authenticator app will generate codes under the
+label "TOTP-Proxy-example", that you can verify with this proxy.
+
+Send a verification request like this:
+
+```
+curl -i https://$ORG-$ENV.apigee.net/totp/verify?totp=XXXXX
+```
+
+Replace the xxxx with the generated code shown in your mobile device app.
+
+Example success case:
+```
+$ curl -i https://$ORG-$ENV.apigee.net/totp/verify?totp=376411
+HTTP/1.1 200 OK
+Date: Wed, 14 Nov 2018 23:21:05 GMT
+Content-Type: application/json
+Content-Length: 21
+Connection: keep-alive
+
+{
+  "status" : "ok"
+}
+```
+
+Example rejection case:
+
+```
+$ curl -i https://$ORG-$ENV.apigee.net/totp/verify?totp=376432
+HTTP/1.1 401 Unauthorized
+Date: Wed, 14 Nov 2018 23:21:10 GMT
+Content-Type: application/json
+Content-Length: 100
+Connection: keep-alive
+
+{
+  "error" : {
+    "code" : 401.01,
+    "message" : "unauthorized. The TOTP does not match."
+  }
+}
+
+```
+
+
+## Getting your own barcode
+
+You can get your own barcode for use with this callout policy.
+To do that, you can ask google to prepare one for you, by creating a URL pointing to https://www.google.com/chart?chs=200x200&...
+
+You need to pass google the secret to do this!
+Only do this if trust google not to store or use those secrets.
+
+The base url is:
+
+```
+https://www.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=CHL_PARAMETER
+```
+
+The CHL_PARAMETER should be structured like this: 
+
+```
+otpauth://totp/USERNAME?secret=SECRET&issuer=ISSUER
+```
+
+...and then url-encoded.
+
+The username should be something meaningful to your users.
+The secret must be a byte stream that is base32-encoded.
+For example, for the secret, "ABCDEFGH1234567890",
+the value would be IFBEGRCFIZDUQMJSGM2DKNRXHA4TA . 
+The issuer is anything that identifies the service provider.
+
+Assembling the URL, you get something like this:
+```
+https://www.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=otpauth%3A%2F%2Ftotp%2FTOTP-Proxy-example%3Fsecret%3DIFBEGRCFIZDUQMJSGM2DKNRXHA4TA%26issuer%3Dcommunity.apigee.com
+
+```
+
+If you open that URL in the browser, you'll see a barcode corresponding to:
+
+| param    | value                 |
+| -------- | --------------------- |
+| username | TOTP-Proxy-example    |
+| secret   | ABCDEFGH1234567890    |
+| issuer   | community.apigee.com  |
+
+
+Your URL and your barcode will be different. Scan the resulting barcode with the
+Google Authenticator app on your mobile device, and it will begin generating
+TOTP codes for your parameters. 
 
 
 ## Disclaimer
