@@ -56,14 +56,23 @@ If the callout fails for some reason, such as misconfiguration, these variables 
 
 ## Using the Policy
 
-This callout policy merely _generates_ a TOTP.  You need to couple it with a Condition to _check_ the code against something the user passed in.  Eg,
+1. It might be a good idea to use the consumer app "secret key" as the key for
+   the OTP.  To do that , you'd need to precede this policy with a VerifyApiKey
+   or similar, so that you can obtain the secret key corresponding to the
+   consumer key.
 
-```
-  <Step>
-    <Condition>totp_code != request.queryparam.totp</Condition>
-    <Name>RaiseFault-TOTPInvalid</Name>
-  </Step>
-```
+2. This callout policy merely _generates_ a TOTP.  You need to couple it with a
+   Condition to _check_ the code against something the user passed in.  Eg,
+
+   ```
+     <Step>
+       <Name>Java-TOTP</Name>
+     </Step>
+     <Step>
+       <Condition>totp_code != request.queryparam.totp</Condition>
+       <Name>RaiseFault-TOTPInvalid</Name>
+     </Step>
+   ```
 
 
 ## Example
@@ -95,8 +104,9 @@ Connection: keep-alive
 
 Obviously your code will vary.  The key used here is a contrived secret key.
 
-To test the values from the RFC6238 spec, you can GET /rfc6238test/sha{1,256,512} .   Pass one of the well known time values.
-The values and their expected codes are:
+To test the values from the RFC6238 spec, you can `GET
+/rfc6238test/sha{1,256,512}` .  Pass one of the well known time values.  The
+values and their expected codes are:
 
 | time value   | expected (sha1) | expected (sha256) | expected (sha512) |
 |--------------|-----------------|-------------------|-------------------|
@@ -123,8 +133,10 @@ Connection: keep-alive
 }
 ```
 
-NB: This test works by passing a "fake time" to the policy to use in place of "now."
-Don't use the `fake-time-seconds` property in production.
+NB: This test works by passing a "fake time" to the policy to use in place of
+"now," and by using a well-known secret key. Don't use the `fake-time-seconds`
+property in production, and don't reuse the well-known secret key. Those things
+are expected to be used only for testing.
 
 
 ## Disclaimer
