@@ -123,7 +123,7 @@ Send a verification request like this:
 curl -i https://$ORG-$ENV.apigee.net/totp/verify?totp=XXXXX
 ```
 
-Replace the xxxx with the generated code shown in your mobile device app.
+Replace the xxxx with the generated code shown in your mobile device app under "TOTP-Proxy-example".
 
 Example success case:
 ```
