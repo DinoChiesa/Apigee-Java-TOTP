@@ -1,0 +1,23 @@
+<AssignMessage name='AM-Variables'>
+  <DisplayName>AM-Variables</DisplayName>
+  <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+
+  <AssignVariable>
+    <Name>rfc6238_test_key_sha1</Name>
+    <Value>3132333435363738393031323334353637383930</Value>
+  </AssignVariable>
+  <AssignVariable>
+    <Name>rfc6238_test_key_sha256</Name>
+    <Value>3132333435363738393031323334353637383930313233343536373839303132</Value>
+  </AssignVariable>
+  <AssignVariable>
+    <Name>rfc6238_test_key_sha512</Name>
+    <Value>31323334353637383930313233343536373839303132333435363738393031323334353637383930313233343536373839303132333435363738393031323334</Value>
+  </AssignVariable>
+
+  <AssignVariable>
+    <Name>my_secret_key</Name>
+    <Value>ABCDEFGH1234567890</Value>
+  </AssignVariable>
+
+</AssignMessage>

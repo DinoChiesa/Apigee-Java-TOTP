@@ -1,0 +1,8 @@
+<JavaCallout name='Java-TOTP-1'>
+  <Properties>
+    <Property name='key'>{my_secret_key}</Property>
+    <Property name='code-digits'>6</Property>
+  </Properties>
+  <ClassName>com.google.apigee.edgecallouts.TotpCallout</ClassName>
+  <ResourceURL>java://edge-google-authenticator-totp-1.0.1.jar</ResourceURL>
+</JavaCallout>

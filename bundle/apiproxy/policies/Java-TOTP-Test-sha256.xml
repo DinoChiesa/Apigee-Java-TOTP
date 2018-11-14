@@ -1,0 +1,11 @@
+<JavaCallout name='Java-TOTP-Test-sha256'>
+  <Properties>
+    <Property name='key'>{rfc6238_test_key_sha256}</Property>
+    <Property name='decode-key'>base16</Property>
+    <Property name='code-digits'>8</Property>
+    <Property name='hash-function'>sha256</Property>
+    <Property name='fake-time-seconds'>{request.queryparam.faketime}</Property>
+  </Properties>
+  <ClassName>com.google.apigee.edgecallouts.TotpCallout</ClassName>
+  <ResourceURL>java://edge-google-authenticator-totp-1.0.1.jar</ResourceURL>
+</JavaCallout>
