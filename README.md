@@ -77,10 +77,12 @@ If the callout fails for some reason, such as misconfiguration, these variables 
 
 ## Examples
 
+See the attached [bundle](./bundle) for a working API Proxy.
+To try out the following scenarios, deploy that proxy to any org and environment.
+
 ### Generating a code
 
-See the attached [bundle](./bundle) for a working API Proxy.
-To use it, deploy it to any org and environment, then invoke it to generate a TOTP like this:
+Invoke the proxy to generate a TOTP like this:
 
 ```
 ORG=myorg
@@ -115,7 +117,7 @@ Scan this barcode with an authenticator app on your mobile device:
 
 This will generate codes that you can verify with this proxy.
 
-Send a verification request like this: 
+Send a verification request like this:
 
 ```
 curl -i https://$ORG-$ENV.apigee.net/totp/verify?totp=XXXXX
@@ -123,7 +125,7 @@ curl -i https://$ORG-$ENV.apigee.net/totp/verify?totp=XXXXX
 
 Replace the xxxx with the generated code shown in your mobile device app.
 
-Exmple success case:
+Example success case:
 ```
 $ curl -i https://$ORG-$ENV.apigee.net/totp/verify?totp=376411
 HTTP/1.1 200 OK
