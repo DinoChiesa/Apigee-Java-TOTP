@@ -1,11 +1,16 @@
-# Edge Callout: TOTP Generator and Verifier
+# Edge Callout: TOTP Generator
 
-This is a simple Apigee Edge callout that generates and verifies a Time-based One-time Password (TOTP),
-as described in [IETF RFC 6238](https://tools.ietf.org/html/rfc6238).
+This is a simple Apigee Edge callout that generates and verifies a Time-based
+One-time Password (TOTP), as described in [IETF RFC
+6238](https://tools.ietf.org/html/rfc6238).
 
-With this callout, API Proxies can require users to generate and send a TOTP with a request, and then can verify that TOTP within the proxy.
+This callout produces the TOTP. It relies on [a TOTP library from warren
+strange](https://github.com/wstrange/GoogleAuth/), implemented based on code
+from the Google Authenticator app.
 
-This callout produces or verifies the TOTP. It relies on [a TOTP library from warren strange](https://github.com/wstrange/GoogleAuth/), implemented based on code from the Google Authenticator app.
+API Proxies can require users to generate and send a TOTP with a request. This
+callout can generate the TOTP. Then the proxy logic should verify that the
+generated TOTP matches the passed-in value.
 
 This code is open source. You don't need to compile it in order to use it.
 
@@ -116,11 +121,11 @@ Connection: keep-alive
   "status" : "ok",
   "code" : "68084774"
 }
+```
 
 NB: This test works by passing a "fake time" to the policy to use in place of "now."
 Don't use the `fake-time-seconds` property in production.
 
-```
 
 ## Disclaimer
 
