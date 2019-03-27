@@ -208,10 +208,10 @@ Only do this if trust Google not to store or use those secrets.
 
 You can use [this form](https://dinochiesa.github.io/totp/link-builder.html) to generate a barcode easily.
 
-If youd like to generate a barcode manually, without the assistance of a form, the following describes how.
+If instead you would like to generate a barcode manually, without the assistance of a form, the following describes how.
 For full details, see [here](https://github.com/google/google-authenticator/wiki/Key-Uri-Format).
 
-The base url is:
+The url structure is:
 
 ```
 https://www.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=CHL_PARAMETER
@@ -223,7 +223,6 @@ The CHL_PARAMETER should be structured like this:
 otpauth://totp/LABEL?secret=SECRET&issuer=ISSUER
 ```
 
-...and then url-encoded.
 
 * The LABEL should conform to this pattern: PREFIX:IDENTIFIER, and should be something
   meaningful to your users. Example:godino@google.com is a good label.
@@ -236,6 +235,9 @@ otpauth://totp/LABEL?secret=SECRET&issuer=ISSUER
 
 * The ISSUER is anything that identifies the service provider. Often, but not
   always, it is the same as the PREFIX used in the LABEL.
+
+
+The CHL parameter needs to be url-encoded, and then embedded into the base URL.
 
 Assembling the URL, you get something like this:
 ```
@@ -252,9 +254,9 @@ If you open that URL in the browser, you'll see a barcode corresponding to:
 | issuer   | community.apigee.com          |
 
 
-Your URL and your barcode will be different. Scan the resulting barcode with the
-Google Authenticator app on your mobile device, and it will begin generating
-TOTP codes for your parameters.
+If you use different parameters, your URL and your barcode will be
+different. Scan the resulting barcode with the Google Authenticator app on your
+mobile device, and it will begin generating TOTP codes for your parameters.
 
 
 ## Disclaimer
