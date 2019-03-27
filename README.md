@@ -23,7 +23,6 @@ Configure the policy like this:
 <JavaCallout name='Java-TOTP'>
   <Properties>
     <Property name='key'>{my_key_here}</Property>
-    <Property name='code-digits'>6</Property>
   </Properties>
   <ClassName>com.google.apigee.edgecallouts.TotpCallout</ClassName>
   <ResourceURL>java://edge-google-authenticator-totp-1.0.2.jar</ResourceURL>
@@ -35,12 +34,14 @@ Within the Properties, you can specify the various inputs for the TOTP.
 | name         | required | meaning                                 |
 | ------------ | -------- | ----------------------------------------|
 | key          | required | a key to use for the TOTP. It can be encoded. You can use curly-braces to refer to a variable. |
+| decode-key   | optional | The way to decode the key.  Valid values: base16, base32, base64.  Default: none, meaning the key is just a string. |
 | code-digits  | optional | how many digits to produce.  Default: 6 |
 | time-step    | optional | The time step in seconds. Default: 30   |
-| decode-key   | optional | The way to decode the key.  Valid values: base16, base32, base64.  Default: none  |
 | hash-function| optional | The HMAC hash to use. Valid values: sha1, sha256, sha512. Default: sha1 |
 
 All of these properties should coincide with the properties you used to create the barcode.
+But be careful: the code-digits, time-step, and hash-function are all ignored by the Google Authenticator app.
+You should probably just leave those as defaults.
 
 
 The output of the callout is context variable:
