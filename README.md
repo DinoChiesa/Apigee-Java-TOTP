@@ -201,10 +201,15 @@ Connection: keep-alive
 ## Getting your own barcode
 
 You can get your own barcode for use with this callout policy.
-To do that, you can ask google to prepare one for you, by creating a URL pointing to https://www.google.com/chart?chs=200x200&...
+by asking google to prepare one for you, by creating a URL pointing to a link like this: https://www.google.com/chart?chs=...
 
-You need to pass google the secret to do this!
-Only do this if trust google not to store or use those secrets.
+You need to pass Google the secret to do this!
+Only do this if trust Google not to store or use those secrets.
+
+You can use [this form](https://dinochiesa.github.io/totp/link-builder.html) to generate a barcode easily.
+
+If youd like to generate a barcode manually, without the assistance of a form, the following describes how.
+For full details, see [here](https://github.com/google/google-authenticator/wiki/Key-Uri-Format).
 
 The base url is:
 
@@ -212,38 +217,44 @@ The base url is:
 https://www.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=CHL_PARAMETER
 ```
 
-The CHL_PARAMETER should be structured like this: 
+The CHL_PARAMETER should be structured like this:
 
 ```
-otpauth://totp/USERNAME?secret=SECRET&issuer=ISSUER
+otpauth://totp/LABEL?secret=SECRET&issuer=ISSUER
 ```
 
 ...and then url-encoded.
 
-The username should be something meaningful to your users.
-The secret must be a byte stream that is base32-encoded.
-For example, for the secret, "ABCDEFGH1234567890",
-the value would be IFBEGRCFIZDUQMJSGM2DKNRXHA4TA . 
-The issuer is anything that identifies the service provider.
+* The LABEL should conform to this pattern: PREFIX:IDENTIFIER, and should be something
+  meaningful to your users. Example:godino@google.com is a good label.
+
+* The SECRET must be a byte stream that is base32-encoded (per [IETF RFC
+  4648](https://tools.ietf.org/html/rfc4648)).  For example, for the secret
+  consisting of these ASCII characters, "ABCDEFGH1234567890", the value to
+  include in the URL would be IFBEGRCFIZDUQMJSGM2DKNRXHA4TA .  Base-32 encoding
+  allows secrets that contain non-ASCII characters.
+
+* The ISSUER is anything that identifies the service provider. Often, but not
+  always, it is the same as the PREFIX used in the LABEL.
 
 Assembling the URL, you get something like this:
 ```
-https://www.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=otpauth%3A%2F%2Ftotp%2FTOTP-Proxy-example%3Fsecret%3DIFBEGRCFIZDUQMJSGM2DKNRXHA4TA%26issuer%3Dcommunity.apigee.com
+https://www.google.com/chart?chs=200x200&chld=M%7C0&cht=qr&chl=otpauth%3A%2F%2Ftotp%2Fapigee.com%3ATOTP-Proxy-example%3Fsecret%3DIFBEGRCFIZDUQMJSGM2DKNRXHA4TA%26issuer%3Dcommunity.apigee.com
 
 ```
 
 If you open that URL in the browser, you'll see a barcode corresponding to:
 
-| param    | value                 |
-| -------- | --------------------- |
-| username | TOTP-Proxy-example    |
-| secret   | ABCDEFGH1234567890    |
-| issuer   | community.apigee.com  |
+| param    | value                         |
+| -------- | ----------------------------- |
+| label    | apigee.com:TOTP-Proxy-example |
+| secret   | ABCDEFGH1234567890            |
+| issuer   | community.apigee.com          |
 
 
 Your URL and your barcode will be different. Scan the resulting barcode with the
 Google Authenticator app on your mobile device, and it will begin generating
-TOTP codes for your parameters. 
+TOTP codes for your parameters.
 
 
 ## Disclaimer
