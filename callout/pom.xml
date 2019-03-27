@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.google.apigee.edgecallouts</groupId>
   <artifactId>edge-google-authenticator-totp</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <name>EdgeJavaGoogleAuthenticatorTotp</name>
   <url>http://maven.apache.org</url>
   <packaging>jar</packaging>
@@ -33,6 +33,7 @@
     <groupId>com.google.guava</groupId>
     <artifactId>guava</artifactId>
     <version>${guava.version}</version>
+    <scope>test</scope>
 </dependency>
 
 <!--
@@ -66,11 +67,13 @@ do it manually by running these commands:
       <groupId>com.apigee.edge</groupId>
       <artifactId>message-flow</artifactId>
       <version>1.0.0</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.apigee.edge</groupId>
       <artifactId>expressions</artifactId>
       <version>1.0.0</version>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
@@ -145,7 +148,7 @@ do it manually by running these commands:
                 <copy todir="${apiproxy.java.rsrc.dir}">
                   <fileset dir="${project.build.directory}">
                     <include name="${project.build.finalName}.jar"/>
-                    <!-- copy any required dependencies tht are not
+                    <!-- copy any required dependencies that are not
                     already included in the Edge runtime:
                     -->
                     <include name="lib/*.jar"/>

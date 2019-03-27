@@ -1,4 +1,4 @@
-package com.google.apigee.edgecallouts.test;
+package com.google.apigee.edgecallouts;
 
 import com.apigee.flow.execution.ExecutionContext;
 import com.apigee.flow.execution.ExecutionResult;
@@ -267,4 +267,36 @@ public class TestTotpCallout {
         System.out.println("=========================================================");
     }
 
+    // // This test can be uncommented, modified, and run.
+    // // Replace:
+    // //  1. the testKeyString with the key used to generate the TOTP barcode
+    // //  2. the expectedCodeValue with the code generated "right now" from the mobile app.
+    // //
+    // @Test
+    // public void test_MyCustomTotp_Ref_SHA1() throws Exception {
+    //     String testKeyString = "1766176376398109-20-30";
+    //     String expectedCodeValue = "704145"; // replace this with code from the app
+    //     byte[] keyBytes = testKeyString.getBytes(StandardCharsets.UTF_8);
+    //     msgCtxt.setVariable("my-key", BaseEncoding.base64().encode(keyBytes));
+    //     //msgCtxt.setVariable("faketime", fakeTime);
+    //     Map<String,String> props = new HashMap<String,String>();
+    //     props.put("key", "{my-key}");
+    //     props.put("decode-key", "base64");
+    // 
+    //     TotpCallout callout = new TotpCallout(props);
+    // 
+    //     // execute and retrieve output
+    //     ExecutionResult actualResult = callout.execute(msgCtxt, exeCtxt);
+    //     Assert.assertEquals(actualResult, ExecutionResult.SUCCESS, "result not as expected");
+    //     Object errorOutput = msgCtxt.getVariable("totp_error");
+    //     Assert.assertNull(errorOutput, "errorOutput");
+    //     Object stacktrace =  msgCtxt.getVariable("totp_stacktrace");
+    //     Assert.assertNull(stacktrace, "GoodResultHexKey() stacktrace");
+    //     Object actualCodeValue = msgCtxt.getVariable("totp_code");
+    //     Assert.assertNotNull(actualCodeValue, "actualCodeValue");
+    //     System.out.println("actualCodeValue: " + actualCodeValue);
+    //     Assert.assertEquals(actualCodeValue, expectedCodeValue);
+    //     System.out.println("=========================================================");
+    // }
+    
 }

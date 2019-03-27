@@ -4,14 +4,17 @@ import com.apigee.flow.execution.ExecutionContext;
 import com.apigee.flow.execution.ExecutionResult;
 import com.apigee.flow.execution.spi.Execution;
 import com.apigee.flow.message.MessageContext;
-import com.google.common.io.BaseEncoding;
+import com.google.apigee.encoding.Base16;
+import com.google.apigee.encoding.Base32;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.warrenstrange.googleauth.GoogleAuthenticatorConfig.GoogleAuthenticatorConfigBuilder;
-import com.warrenstrange.googleauth.KeyRepresentation;
 import com.warrenstrange.googleauth.HmacHashFunction;
+import com.warrenstrange.googleauth.KeyRepresentation;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 public class TotpCallout extends CalloutBase implements Execution {
     private final static int DEFAULT_TIME_STEP_SECONDS = 30;
@@ -45,16 +48,18 @@ public class TotpCallout extends CalloutBase implements Execution {
 
     private String encodeKey(String initialKey) {
         String value = (String) this.properties.get("decode-key");
+        Function<byte[], String> encodeB64 = (byte[] x) -> Base64.getEncoder().encodeToString(x);
         if ("hex".equals(value) || "base16".equals(value)){
-            return BaseEncoding.base64().encode(BaseEncoding.base16().decode(initialKey));
+            return encodeB64.apply(Base16.decode(initialKey));
         }
         if ("base32".equals(value)){
-            return BaseEncoding.base64().encode(BaseEncoding.base32().decode(initialKey));
+            return encodeB64.apply(Base32.decode(initialKey));
         }
         if ("base64".equals(value)){
             return initialKey;
         }
-        return BaseEncoding.base64().encode(initialKey.getBytes(StandardCharsets.UTF_8));
+        // not encoded... it's just a string
+        return encodeB64.apply(initialKey.getBytes(StandardCharsets.UTF_8));
     }
 
     private String getEncodedKey(MessageContext msgCtxt) throws Exception {
