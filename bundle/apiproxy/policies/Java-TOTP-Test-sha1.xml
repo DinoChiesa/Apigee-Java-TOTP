@@ -1,7 +1,6 @@
 <JavaCallout name='Java-TOTP-Test-sha1'>
   <Properties>
     <Property name='key'>{rfc6238_test_key_sha1}</Property>
-    <Property name='decode-key'>base16</Property>
     <Property name='code-digits'>8</Property>
     <Property name='fake-time-seconds'>{request.queryparam.faketime}</Property>
   </Properties>

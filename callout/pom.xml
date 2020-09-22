@@ -4,9 +4,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.google.apigee.edgecallouts</groupId>
-  <artifactId>edge-google-authenticator-totp</artifactId>
-  <version>1.0.2</version>
-  <name>EdgeJavaGoogleAuthenticatorTotp</name>
+  <artifactId>apigee-google-authenticator-totp</artifactId>
+  <version>20200921</version>
+  <name>ApigeeJavaGoogleAuthenticatorTotp</name>
   <url>http://maven.apache.org</url>
   <packaging>jar</packaging>
   <properties>

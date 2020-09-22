@@ -31,13 +31,14 @@ Configure the policy like this:
 
 Within the Properties, you can specify the various inputs for the TOTP.
 
-| name         | required | meaning                                 |
-| ------------ | -------- | ----------------------------------------|
-| key          | required | a key to use for the TOTP. It can be encoded. You can use curly-braces to refer to a variable. |
-| decode-key   | optional | The way to decode the key.  Valid values: base16, base32, base64.  Default: none, meaning the key is just a string. |
-| code-digits  | optional | how many digits to produce.  Default: 6 |
-| time-step    | optional | The time step in seconds. Default: 30   |
-| hash-function| optional | The HMAC hash to use. Valid values: sha1, sha256, sha512. Default: sha1 |
+| name           | required | meaning                                 |
+| -------------- | -------- | ----------------------------------------|
+| key            | required | a key to use for the TOTP. It can be encoded. You can use curly-braces to refer to a variable. |
+| decode-key     | optional | The way to decode the key.  Valid values: base16, base32, base64.  Default: none, meaning the key is just a string. |
+| code-digits    | optional | how many digits to produce.  Default: 6 |
+| time-step      | optional | The time step in seconds. Default: 30   |
+| hash-function  | optional | The HMAC hash to use. Valid values: sha1, sha256, sha512. Default: sha1 |
+| expected-value | optional | a value, if present, the policy will check against the generated value. |
 
 All of these properties should coincide with the properties you used to create the barcode.
 But be careful: the code-digits, time-step, and hash-function are all ignored by the Google Authenticator app.
@@ -48,25 +49,67 @@ The output of the callout is context variable:
 
 | name                  | meaning                                             |
 | --------------------- | ----------------------------------------------------|
-| totp_code             | the One-time password computed from the inputs.     |
+| totp\_code             | the One-time password computed from the inputs.     |
 
 If the callout fails for some reason, such as misconfiguration, these variables get set:
 
 | name                  | meaning |
 | --------------------- | ---------------------------------------------------------------------- |
-| totp_error            | a human-readable error message.                                        |
-| totp_stacktrace       | a human-readable stacktrace.                                           |
+| totp\_error            | a human-readable error message.                                        |
+| totp\_stacktrace       | a human-readable stacktrace.                                           |
 
 
-## Using the Policy
+## Notes on Using the Policy
 
-1. It might be a good idea to use the consumer app "secret key" as the key for
-   the OTP. To do that, you'd need to precede this policy with a VerifyApiKey
-   or similar, so that you can obtain the secret key corresponding to the
-   consumer key.
+It might be a good idea to use the consumer app "secret key" as the key for
+the OTP. To do that, you'd need to precede this policy with a VerifyApiKey
+or AccessEntity, so that you can obtain the secret key corresponding to the
+consumer key.
 
-2. This callout policy merely _generates_ a TOTP.  You need to couple it with a
-   Condition to _check_ the code against something the user passed in.  Eg,
+## Examples
+
+**Generate a code**
+
+This configuration uses test vector values from RFC 6238, p 14. 
+
+```
+<JavaCallout name='Java-TOTP-Test-sha1'>
+  <Properties>
+    <Property name='key'>12345678901234567890</Property>
+    <Property name='code-digits'>8</Property>
+    <Property name='hash-function>sha1</Property>
+    <Property name='fake-time-seconds'>59</Property>
+  </Properties>
+  <ClassName>com.google.apigee.edgecallouts.TotpCallout</ClassName>
+  <ResourceURL>java://edge-google-authenticator-totp-1.0.2.jar</ResourceURL>
+</JavaCallout>
+```
+
+The result,  `94287082`, will be placed into the context variable `totp_code`. 
+
+**Verify a Code**
+
+
+```
+<JavaCallout name='Java-TOTP-Test-sha1'>
+  <Properties>
+    <Property name='key'>12345678901234567890</Property>
+    <Property name='code-digits'>8</Property>
+    <Property name='hash-function>sha1</Property>
+    <Property name='fake-time-seconds'>59</Property>
+    <Property name='expected-value'>{request.queryparam.totp}</Property>
+  </Properties>
+  <ClassName>com.google.apigee.edgecallouts.TotpCallout</ClassName>
+  <ResourceURL>java://edge-google-authenticator-totp-1.0.2.jar</ResourceURL>
+</JavaCallout>
+```
+
+ This callout policy will _generate_ a TOTP, and then check it against
+ an expected value.  
+  
+ Rather than having the policy check the value, you can
+ alternatively omit the `expected-value` property, and then use your own external `Condition` element to check the generated code against
+ something the user passed in.  Eg,
 
    ```
      <Step>
@@ -78,7 +121,9 @@ If the callout fails for some reason, such as misconfiguration, these variables 
      </Step>
    ```
 
-## Examples
+
+
+## A Working Proxy
 
 See the attached [bundle](./bundle) for a working API Proxy.
 To try out the following scenarios, deploy that proxy to any org and environment.
@@ -269,7 +314,7 @@ This example is not an official Google product, nor is it part of an official Go
 
 ## License
 
-This material is copyright 2018, Google LLC.
+This material is copyright 2018-2020, Google LLC.
 and is licensed under the Apache 2.0 license. See the [LICENSE](LICENSE) file.
 
 ## Building
