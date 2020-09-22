@@ -21,20 +21,19 @@
 
   <dependencies>
 
-<!-- https://mvnrepository.com/artifact/com.warrenstrange/googleauth -->
-<dependency>
-    <groupId>com.warrenstrange</groupId>
-    <artifactId>googleauth</artifactId>
-    <version>${googleauth.version}</version>
-</dependency>
+    <dependency>
+      <groupId>com.eatthepath</groupId>
+      <artifactId>java-otp</artifactId>
+      <version>0.2.0</version>
+      <scope>compile</scope>
+    </dependency>
 
-<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-<dependency>
-    <groupId>com.google.guava</groupId>
-    <artifactId>guava</artifactId>
-    <version>${guava.version}</version>
-    <scope>test</scope>
-</dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
+      <scope>test</scope>
+    </dependency>
 
 <!--
 
@@ -107,7 +106,7 @@ do it manually by running these commands:
             </goals>
             <configuration>
               <outputDirectory>${project.build.directory}/lib</outputDirectory>
-              <includeScope>compile</includeScope>
+              <includeScope>runtime</includeScope>
               <overWriteReleases>false</overWriteReleases>
               <overWriteSnapshots>false</overWriteSnapshots>
               <overWriteIfNewer>true</overWriteIfNewer>

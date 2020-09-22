@@ -4,22 +4,21 @@ import com.apigee.flow.execution.ExecutionContext;
 import com.apigee.flow.execution.ExecutionResult;
 import com.apigee.flow.execution.spi.Execution;
 import com.apigee.flow.message.MessageContext;
+import com.eatthepath.otp.TimeBasedOneTimePasswordGenerator;
 import com.google.apigee.encoding.Base16;
 import com.google.apigee.encoding.Base32;
-import com.warrenstrange.googleauth.GoogleAuthenticator;
-import com.warrenstrange.googleauth.GoogleAuthenticatorConfig.GoogleAuthenticatorConfigBuilder;
-import com.warrenstrange.googleauth.HmacHashFunction;
-import com.warrenstrange.googleauth.KeyRepresentation;
 import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
+import javax.crypto.spec.SecretKeySpec;
 
 public class TotpCallout extends CalloutBase implements Execution {
   private static final int DEFAULT_TIME_STEP_SECONDS = 30;
   private static final int DEFAULT_CODE_DIGITS = 6;
-  private final HmacHashFunction DEFAULT_HASH_FUNCTION = HmacHashFunction.HmacSHA1;
+  private final String DEFAULT_HASH_FUNCTION = "HmacSHA1";
 
   public TotpCallout(Map properties) {
     super(properties);
@@ -46,39 +45,38 @@ public class TotpCallout extends CalloutBase implements Execution {
     }
   }
 
-  private String encodeKey(String initialKey) {
+  private byte[] decodeKey(String initialKey) {
     String value = (String) this.properties.get("decode-key");
-    Function<byte[], String> encodeB64 = (byte[] x) -> Base64.getEncoder().encodeToString(x);
     if ("hex".equals(value) || "base16".equals(value)) {
-      return encodeB64.apply(Base16.decode(initialKey));
+      return Base16.decode(initialKey);
     }
     if ("base32".equals(value)) {
-      return encodeB64.apply(Base32.decode(initialKey));
+      return Base32.decode(initialKey);
     }
     if ("base64url".equals(value)) {
-      return encodeB64.apply(Base64.getUrlDecoder().decode(initialKey));
+      return Base64.getUrlDecoder().decode(initialKey);
     }
     if ("base64".equals(value)) {
-      return initialKey;
+      return Base64.getDecoder().decode(initialKey);
     }
     // utf-8 encoded
-    return encodeB64.apply(initialKey.getBytes(StandardCharsets.UTF_8));
+    return initialKey.getBytes(StandardCharsets.UTF_8);
   }
 
-  private String getEncodedKey(MessageContext msgCtxt) throws Exception {
+  private byte[] getDecodedKey(MessageContext msgCtxt) throws Exception {
     String keyString = getSimpleRequiredProperty("key", msgCtxt);
-    return encodeKey(keyString);
+    return decodeKey(keyString);
   }
 
-  private long getTime(MessageContext msgCtxt) {
+  private Instant getTime(MessageContext msgCtxt) {
     String value = (String) this.properties.get("fake-time-millis");
     if (value != null) {
       try {
         value = value.trim();
         value = resolvePropertyValue(value, msgCtxt);
-        return Long.parseLong(value);
+        return Instant.ofEpochMilli(Long.parseLong(value));
       } catch (Exception ignoredException) {
-        return java.time.Instant.now().getEpochSecond() * 1000L;
+        return java.time.Instant.now();
       }
     }
     value = (String) this.properties.get("fake-time-seconds");
@@ -86,21 +84,28 @@ public class TotpCallout extends CalloutBase implements Execution {
       try {
         value = value.trim();
         value = resolvePropertyValue(value, msgCtxt);
-        return Long.parseLong(value) * 1000L;
+        return Instant.ofEpochSecond(Long.parseLong(value));
       } catch (Exception ignoredException) {
-        return java.time.Instant.now().getEpochSecond() * 1000L;
+        return java.time.Instant.now();
       }
     }
-    return java.time.Instant.now().getEpochSecond() * 1000L;
+    return java.time.Instant.now();
   }
 
-  private HmacHashFunction getHashFunction(MessageContext msgCtxt) throws Exception {
+  private boolean getWantLeadingZeros() {
+    String value = (String) this.properties.get("leading-zeros");
+    if (value == null) return false;
+    if (value.trim().toLowerCase().equals("true")) return true;
+    return false;
+  }
+
+  private String getHashFunction(MessageContext msgCtxt) throws Exception {
     String value = getSimpleOptionalProperty("hash-function", msgCtxt);
     if (value == null) return DEFAULT_HASH_FUNCTION;
     value = value.toLowerCase();
-    if ("sha1".equals(value) || "hmacsha1".equals(value)) return HmacHashFunction.HmacSHA1;
-    if ("sha256".equals(value) || "hmacsha256".equals(value)) return HmacHashFunction.HmacSHA256;
-    if ("sha512".equals(value) || "hmacsha512".equals(value)) return HmacHashFunction.HmacSHA512;
+    if ("sha1".equals(value) || "hmacsha1".equals(value)) return "HmacSHA1";
+    if ("sha256".equals(value) || "hmacsha256".equals(value)) return "HmacSHA256";
+    if ("sha512".equals(value) || "hmacsha512".equals(value)) return "HmacSHA512";
     return DEFAULT_HASH_FUNCTION;
   }
 
@@ -108,33 +113,34 @@ public class TotpCallout extends CalloutBase implements Execution {
     try {
       final int timeStepSizeInSeconds = getTimeStep(msgCtxt);
       final int codeDigits = getCodeDigits(msgCtxt);
-      final String base64EncodedKey = getEncodedKey(msgCtxt);
-      System.out.printf("encodedKey= %s\n", base64EncodedKey);
+      final Key key = new SecretKeySpec(getDecodedKey(msgCtxt), "RAW");
+      final String hashAlgorithm = getHashFunction(msgCtxt);
+      msgCtxt.setVariable(varName("hashfunction"), hashAlgorithm);
 
-      GoogleAuthenticatorConfigBuilder cb =
-          new GoogleAuthenticatorConfigBuilder()
-              .setCodeDigits(codeDigits)
-              .setTimeStepSizeInMillis(TimeUnit.SECONDS.toMillis(timeStepSizeInSeconds))
-              .setKeyRepresentation(KeyRepresentation.BASE64);
+      final TimeBasedOneTimePasswordGenerator totp =
+          new TimeBasedOneTimePasswordGenerator(
+              Duration.ofSeconds(timeStepSizeInSeconds), codeDigits, hashAlgorithm);
 
-      final HmacHashFunction hmacHashFunction = getHashFunction(msgCtxt);
-      msgCtxt.setVariable(varName("hashfunction"), hmacHashFunction.toString());
-      cb.setHmacHashFunction(hmacHashFunction);
+      final Instant timestamp = getTime(msgCtxt);
 
-      GoogleAuthenticator ga = new GoogleAuthenticator(cb.build());
+      String code = "";
+      if (getWantLeadingZeros()) {
+        String format = String.format("%%0%dd", codeDigits);
+        code = String.format(format, totp.generateOneTimePassword(key, timestamp));
+      } else {
+        code = Integer.toString(totp.generateOneTimePassword(key, timestamp));
+      }
 
-      long epochMillisecond = getTime(msgCtxt);
-      msgCtxt.setVariable(varName("time"), Long.toString(epochMillisecond / 1000));
-      String code = Integer.toString(ga.getTotpPassword(base64EncodedKey, epochMillisecond));
+      msgCtxt.setVariable(varName("time"), Long.toString(timestamp.getEpochSecond()));
       msgCtxt.setVariable(varName("code"), code);
 
       final String expectedValue = getSimpleOptionalProperty("expected-value", msgCtxt);
       if (expectedValue != null) {
-          if (!expectedValue.equals(code)) {
-            msgCtxt.setVariable(varName("error"), "TOTP mismatch");
-            msgCtxt.setVariable("fault.name", "totp_mismatch");
-            return ExecutionResult.ABORT;
-          }
+        if (!expectedValue.equals(code)) {
+          msgCtxt.setVariable(varName("error"), "TOTP mismatch");
+          msgCtxt.setVariable("fault.name", "totp_mismatch");
+          return ExecutionResult.ABORT;
+        }
       }
 
       return ExecutionResult.SUCCESS;

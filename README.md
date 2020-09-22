@@ -4,9 +4,7 @@ This is a simple Apigee Edge callout that generates and verifies a Time-based
 One-time Password (TOTP), as described in [IETF RFC
 6238](https://tools.ietf.org/html/rfc6238).
 
-This callout produces the TOTP. It relies on [a TOTP library from warren
-strange](https://github.com/wstrange/GoogleAuth/), implemented based on code
-from the Google Authenticator app.
+This callout produces the TOTP. It relies on [a TOTP library from jchambers](https://github.com/jchambers/java-otp/).
 
 API Proxies can require users to generate and send a TOTP with a request. This
 callout can generate the TOTP. Then the proxy logic should verify that the
@@ -25,7 +23,7 @@ Configure the policy like this:
     <Property name='key'>{my_key_here}</Property>
   </Properties>
   <ClassName>com.google.apigee.edgecallouts.TotpCallout</ClassName>
-  <ResourceURL>java://edge-google-authenticator-totp-1.0.2.jar</ResourceURL>
+  <ResourceURL>java://apigee-google-authenticator-totp-20200921.jar</ResourceURL>
 </JavaCallout>
 ```
 
@@ -70,7 +68,7 @@ consumer key.
 
 **Generate a code**
 
-This configuration uses test vector values from RFC 6238, p 14. 
+This configuration uses test vector values from RFC 6238, p 14.
 
 ```
 <JavaCallout name='Java-TOTP-Test-sha1'>
@@ -81,11 +79,11 @@ This configuration uses test vector values from RFC 6238, p 14.
     <Property name='fake-time-seconds'>59</Property>
   </Properties>
   <ClassName>com.google.apigee.edgecallouts.TotpCallout</ClassName>
-  <ResourceURL>java://edge-google-authenticator-totp-1.0.2.jar</ResourceURL>
+  <ResourceURL>java://apigee-google-authenticator-totp-20200921.jar</ResourceURL>
 </JavaCallout>
 ```
 
-The result,  `94287082`, will be placed into the context variable `totp_code`. 
+The result,  `94287082`, will be placed into the context variable `totp_code`.
 
 **Verify a Code**
 
@@ -100,16 +98,16 @@ The result,  `94287082`, will be placed into the context variable `totp_code`.
     <Property name='expected-value'>{request.queryparam.totp}</Property>
   </Properties>
   <ClassName>com.google.apigee.edgecallouts.TotpCallout</ClassName>
-  <ResourceURL>java://edge-google-authenticator-totp-1.0.2.jar</ResourceURL>
+  <ResourceURL>java://apigee-google-authenticator-totp-20200921.jar</ResourceURL>
 </JavaCallout>
 ```
 
  This callout policy will _generate_ a TOTP, and then check it against
- an expected value.  
-  
- Rather than having the policy check the value, you can
- alternatively omit the `expected-value` property, and then use your own external `Condition` element to check the generated code against
- something the user passed in.  Eg,
+ an expected value.
+
+ Rather than having the policy check the value, you can alternatively omit the
+ `expected-value` property, and then use your own external `Condition` element
+ to check the generated code against something the user passed in.  Eg,
 
    ```
      <Step>

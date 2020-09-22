@@ -6,5 +6,5 @@
     <Property name='fake-time-seconds'>{request.queryparam.faketime}</Property>
   </Properties>
   <ClassName>com.google.apigee.edgecallouts.TotpCallout</ClassName>
-  <ResourceURL>java://edge-google-authenticator-totp-1.0.2.jar</ResourceURL>
+  <ResourceURL>java://apigee-google-authenticator-totp-20200921.jar</ResourceURL>
 </JavaCallout>
