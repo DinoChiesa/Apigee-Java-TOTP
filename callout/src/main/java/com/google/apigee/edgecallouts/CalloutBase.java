@@ -1,4 +1,4 @@
-// Copyright 2018 Google LLC
+// Copyright 2018-2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,94 +16,116 @@
 package com.google.apigee.edgecallouts;
 
 import com.apigee.flow.message.MessageContext;
-import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class CalloutBase {
-    private final static String _varprefix= "totp_";
-    protected final Map properties; // read-only
-    private static final String variableReferencePatternString = "(.*?)\\{([^\\{\\} ]+?)\\}(.*?)";
-    private static final Pattern variableReferencePattern = Pattern.compile(variableReferencePatternString);
+  private static final String _varprefix = "totp_";
+  protected final Map properties; // read-only
+  private static final String variableReferencePatternString = "(.*?)\\{([^\\{\\} ]+?)\\}(.*?)";
+  private static final Pattern variableReferencePattern =
+      Pattern.compile(variableReferencePatternString);
 
-    public CalloutBase(Map properties) {
-        this.properties = properties;
+  public CalloutBase(Map properties) {
+    this.properties = properties;
+  }
+
+  protected String varName(String s) {
+    return _varprefix + s;
+  }
+
+  protected boolean getDebug() {
+    String value = (String) this.properties.get("debug");
+    if (value == null) return false;
+    if (value.trim().toLowerCase().equals("true")) return true;
+    return false;
+  }
+
+  protected static String getStackTrace(Exception e) {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    e.printStackTrace(pw);
+    return sw.toString();
+  }
+
+  protected int getIntegerWithDefault(MessageContext msgCtxt, String name, int defaultValue)
+      throws Exception {
+    String v = getSimpleOptionalProperty(name, msgCtxt);
+    if (v == null) {
+      return defaultValue;
     }
-
-    protected String varName(String s) { return _varprefix + s; }
-
-    protected boolean getDebug() {
-        String value = (String) this.properties.get("debug");
-        if (value == null) return false;
-        if (value.trim().toLowerCase().equals("true")) return true;
-        return false;
+    try {
+      return Integer.parseInt(v);
+    } catch (Exception ignoredException) {
+      return defaultValue;
     }
+  }
 
-    protected static String getStackTrace(Exception e) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        return sw.toString();
+  protected String getSimpleOptionalProperty(String propName, MessageContext msgCtxt)
+      throws Exception {
+    String value = (String) this.properties.get(propName);
+    if (value == null) {
+      return null;
     }
-
-    protected String getSimpleOptionalProperty(String propName, MessageContext msgCtxt) throws Exception {
-        String value = (String) this.properties.get(propName);
-        if (value == null) { return null; }
-        value = value.trim();
-        if (value.equals("")) { return null; }
-        value = resolvePropertyValue(value, msgCtxt);
-        if (value == null || value.equals("")) { return null; }
-        return value;
+    value = value.trim();
+    if (value.equals("")) {
+      return null;
     }
-
-    protected String getSimpleRequiredProperty(String propName, MessageContext msgCtxt) throws Exception {
-        String value = (String) this.properties.get(propName);
-        if (value == null) {
-            throw new IllegalStateException(propName + " resolves to an empty string");
-        }
-        value = value.trim();
-        if (value.equals("")) {
-            throw new IllegalStateException(propName + " resolves to an empty string");
-        }
-        value = resolvePropertyValue(value, msgCtxt);
-        if (value == null || value.equals("")) {
-            throw new IllegalStateException(propName + " resolves to an empty string");
-        }
-        return value;
+    value = resolvePropertyValue(value, msgCtxt);
+    if (value == null || value.equals("")) {
+      return null;
     }
+    return value;
+  }
 
-    // If the value of a property contains any pairs of curlies,
-    // eg, {apiproxy.name}, then "resolve" the value by de-referencing
-    // the context variables whose names appear between curlies.
-    protected String resolvePropertyValue(String spec, MessageContext msgCtxt) {
-        Matcher matcher = variableReferencePattern.matcher(spec);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            matcher.appendReplacement(sb, "");
-            sb.append(matcher.group(1));
-            Object v = msgCtxt.getVariable(matcher.group(2));
-            if (v != null){
-                sb.append((String) v );
-            }
-            sb.append(matcher.group(3));
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
+  protected String getSimpleRequiredProperty(String propName, MessageContext msgCtxt)
+      throws Exception {
+    String value = (String) this.properties.get(propName);
+    if (value == null) {
+      throw new IllegalStateException(propName + " resolves to an empty string");
     }
-
-    protected void setExceptionVariables(Exception exc1, MessageContext msgCtxt) {
-        String error = exc1.toString();
-        msgCtxt.setVariable(varName("exception"), error);
-        int ch = error.lastIndexOf(':');
-        if (ch >= 0) {
-            msgCtxt.setVariable(varName("error"), error.substring(ch+2).trim());
-        }
-        else {
-            msgCtxt.setVariable(varName("error"), error);
-        }
-        msgCtxt.setVariable(varName("stacktrace"), getStackTrace(exc1));
+    value = value.trim();
+    if (value.equals("")) {
+      throw new IllegalStateException(propName + " resolves to an empty string");
     }
+    value = resolvePropertyValue(value, msgCtxt);
+    if (value == null || value.equals("")) {
+      throw new IllegalStateException(propName + " resolves to an empty string");
+    }
+    return value;
+  }
 
+  // If the value of a property contains any pairs of curlies,
+  // eg, {apiproxy.name}, then "resolve" the value by de-referencing
+  // the context variables whose names appear between curlies.
+  protected String resolvePropertyValue(String spec, MessageContext msgCtxt) {
+    Matcher matcher = variableReferencePattern.matcher(spec);
+    StringBuffer sb = new StringBuffer();
+    while (matcher.find()) {
+      matcher.appendReplacement(sb, "");
+      sb.append(matcher.group(1));
+      Object v = msgCtxt.getVariable(matcher.group(2));
+      if (v != null) {
+        sb.append((String) v);
+      }
+      sb.append(matcher.group(3));
+    }
+    matcher.appendTail(sb);
+    return sb.toString();
+  }
+
+  protected void setExceptionVariables(Exception exc1, MessageContext msgCtxt) {
+    String error = exc1.toString();
+    msgCtxt.setVariable(varName("exception"), error);
+    int ch = error.lastIndexOf(':');
+    if (ch >= 0) {
+      msgCtxt.setVariable(varName("error"), error.substring(ch + 2).trim());
+    } else {
+      msgCtxt.setVariable(varName("error"), error);
+    }
+    msgCtxt.setVariable(varName("stacktrace"), getStackTrace(exc1));
+  }
 }

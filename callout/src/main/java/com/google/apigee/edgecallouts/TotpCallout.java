@@ -32,19 +32,6 @@ public class TotpCallout extends CalloutBase implements Execution {
     return getIntegerWithDefault(msgCtxt, "code-digits", DEFAULT_CODE_DIGITS);
   }
 
-  private int getIntegerWithDefault(MessageContext msgCtxt, String name, int defaultValue)
-      throws Exception {
-    String v = getSimpleOptionalProperty(name, msgCtxt);
-    if (v == null) {
-      return defaultValue;
-    }
-    try {
-      return Integer.parseInt(v);
-    } catch (Exception ignoredException) {
-      return defaultValue;
-    }
-  }
-
   private byte[] decodeKey(String initialKey) {
     String value = (String) this.properties.get("decode-key");
     if ("hex".equals(value) || "base16".equals(value)) {
@@ -123,13 +110,11 @@ public class TotpCallout extends CalloutBase implements Execution {
 
       final Instant timestamp = getTime(msgCtxt);
 
-      String code = "";
-      if (getWantLeadingZeros()) {
-        String format = String.format("%%0%dd", codeDigits);
-        code = String.format(format, totp.generateOneTimePassword(key, timestamp));
-      } else {
-        code = Integer.toString(totp.generateOneTimePassword(key, timestamp));
-      }
+      int integerCode = totp.generateOneTimePassword(key, timestamp);
+      String code =
+          (getWantLeadingZeros())
+              ? String.format(String.format("%%0%dd", codeDigits), integerCode)
+              : Integer.toString(integerCode);
 
       msgCtxt.setVariable(varName("time"), Long.toString(timestamp.getEpochSecond()));
       msgCtxt.setVariable(varName("code"), code);
