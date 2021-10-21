@@ -1,4 +1,4 @@
-package com.google.apigee.edgecallouts;
+package com.google.apigee.callouts;
 
 import com.apigee.flow.execution.ExecutionContext;
 import com.apigee.flow.execution.ExecutionResult;

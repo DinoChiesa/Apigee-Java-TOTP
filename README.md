@@ -22,8 +22,8 @@ Configure the policy like this:
   <Properties>
     <Property name='key'>{my_key_here}</Property>
   </Properties>
-  <ClassName>com.google.apigee.edgecallouts.TotpCallout</ClassName>
-  <ResourceURL>java://apigee-google-authenticator-totp-20200921.jar</ResourceURL>
+  <ClassName>com.google.apigee.callouts.TotpCallout</ClassName>
+  <ResourceURL>java://apigee-google-authenticator-totp-20211021.jar</ResourceURL>
 </JavaCallout>
 ```
 
@@ -78,8 +78,8 @@ This configuration uses test vector values from RFC 6238, p 14.
     <Property name='hash-function>sha1</Property>
     <Property name='fake-time-seconds'>59</Property>
   </Properties>
-  <ClassName>com.google.apigee.edgecallouts.TotpCallout</ClassName>
-  <ResourceURL>java://apigee-google-authenticator-totp-20200921.jar</ResourceURL>
+  <ClassName>com.google.apigee.callouts.TotpCallout</ClassName>
+  <ResourceURL>java://apigee-google-authenticator-totp-20211021.jar</ResourceURL>
 </JavaCallout>
 ```
 
@@ -97,8 +97,8 @@ The result,  `94287082`, will be placed into the context variable `totp_code`.
     <Property name='fake-time-seconds'>59</Property>
     <Property name='expected-value'>{request.queryparam.totp}</Property>
   </Properties>
-  <ClassName>com.google.apigee.edgecallouts.TotpCallout</ClassName>
-  <ResourceURL>java://apigee-google-authenticator-totp-20200921.jar</ResourceURL>
+  <ClassName>com.google.apigee.callouts.TotpCallout</ClassName>
+  <ResourceURL>java://apigee-google-authenticator-totp-20211021.jar</ResourceURL>
 </JavaCallout>
 ```
 
