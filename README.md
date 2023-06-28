@@ -317,12 +317,19 @@ and is licensed under the Apache 2.0 license. See the [LICENSE](LICENSE) file.
 
 ## Building
 
+You do not need to build this callout in order to use it.  Even so, you can build it.  To do so,
+you need Apache Maven 3.5 or later, and JDK v8.
+
+Follow these steps:
+
 ```
+./buildsetup.sh
 cd callout
 mvn clean package
 ```
 
 ## Status
 
-This is a community supported project. There is no warranty for this code.
-If you have problems or questions, as on [commmunity.apigee.com](https://community.apigee.com).
+This is a community supported project. There is no warranty for this code.  If
+you have problems or questions, as on
+[commmunity.apigee.com](https://community.apigee.com).

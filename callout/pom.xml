@@ -14,10 +14,6 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
     <testng.version>6.8.7</testng.version>
-<!--
-    <guava.version>30.0-jre</guava.version>
-    <googleauth.version>1.2.0</googleauth.version>
--->
     <apiproxy.java.rsrc.dir>../bundle/apiproxy/resources/java</apiproxy.java.rsrc.dir>
   </properties>
 
@@ -30,17 +26,6 @@
       <scope>compile</scope>
     </dependency>
 
-    <!--
-         Keep the Guava for the Base16 and Base64 encoding, to ensure
-         that the encoding code in the callout works correctly.
-
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>${guava.version}</version>
-      <scope>test</scope>
-    </dependency>
-    -->
 <!--
 
 The following 2 jar dependencies from Apigee are not avaiable in any
@@ -124,7 +109,7 @@ do it manually by running these commands:
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
+        <version>3.11.0</version>
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
@@ -134,7 +119,7 @@ do it manually by running these commands:
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.3.0</version>
         <configuration>
           <archive>
             <!-- do not include the pom.xml file in the generated jar -->
@@ -192,7 +177,7 @@ do it manually by running these commands:
      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.0.0-M3</version>
+        <version>3.3.0</version>
         <executions>
           <execution>
             <id>enforce-maven</id>
@@ -213,7 +198,7 @@ do it manually by running these commands:
        <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
-        <version>2.8.1</version>
+        <version>2.15.0</version>
         <executions>
           <execution>
             <phase>compile</phase>
