@@ -1,6 +1,6 @@
-# Edge Callout: TOTP Generator
+# Apigee Callout: TOTP Generator
 
-This is a simple Apigee Edge callout that generates and verifies a Time-based
+This is a simple Apigee callout that generates and verifies a Time-based
 One-time Password (TOTP), as described in [IETF RFC
 6238](https://tools.ietf.org/html/rfc6238).
 
@@ -23,7 +23,7 @@ Configure the policy like this:
     <Property name='key'>{my_key_here}</Property>
   </Properties>
   <ClassName>com.google.apigee.callouts.TotpCallout</ClassName>
-  <ResourceURL>java://apigee-google-authenticator-totp-20211021.jar</ResourceURL>
+  <ResourceURL>java://apigee-google-authenticator-totp-20230628.jar</ResourceURL>
 </JavaCallout>
 ```
 
@@ -79,7 +79,7 @@ This configuration uses test vector values from RFC 6238, p 14.
     <Property name='fake-time-seconds'>59</Property>
   </Properties>
   <ClassName>com.google.apigee.callouts.TotpCallout</ClassName>
-  <ResourceURL>java://apigee-google-authenticator-totp-20211021.jar</ResourceURL>
+  <ResourceURL>java://apigee-google-authenticator-totp-20230628.jar</ResourceURL>
 </JavaCallout>
 ```
 
@@ -98,7 +98,7 @@ The result,  `94287082`, will be placed into the context variable `totp_code`.
     <Property name='expected-value'>{request.queryparam.totp}</Property>
   </Properties>
   <ClassName>com.google.apigee.callouts.TotpCallout</ClassName>
-  <ResourceURL>java://apigee-google-authenticator-totp-20211021.jar</ResourceURL>
+  <ResourceURL>java://apigee-google-authenticator-totp-20230628.jar</ResourceURL>
 </JavaCallout>
 ```
 
@@ -312,7 +312,7 @@ This example is not an official Google product, nor is it part of an official Go
 
 ## License
 
-This material is copyright 2018-2020, Google LLC.
+This material is copyright 2018-2023, Google LLC.
 and is licensed under the Apache 2.0 license. See the [LICENSE](LICENSE) file.
 
 ## Building

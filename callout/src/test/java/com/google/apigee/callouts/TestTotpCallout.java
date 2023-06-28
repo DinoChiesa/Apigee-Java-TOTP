@@ -1,14 +1,31 @@
+// Copyright 2018-2023 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
 package com.google.apigee.callouts;
 
 import com.apigee.flow.execution.ExecutionContext;
 import com.apigee.flow.execution.ExecutionResult;
 import com.apigee.flow.message.Message;
 import com.apigee.flow.message.MessageContext;
-import com.google.common.io.BaseEncoding;
+//import com.google.common.io.BaseEncoding;
+import com.google.apigee.encoding.Base16;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Base64;
 import mockit.Mock;
 import mockit.MockUp;
 import org.testng.Assert;
@@ -140,8 +157,8 @@ public class TestTotpCallout {
     // these values are taken from RFC 6238, p. 14
     String expectedCodeValue = "89005924";
     String fakeTime = "1234567890000"; // milliseconds since epoch
-    byte[] keyBytes = BaseEncoding.base16().decode(rfc6238TestKey);
-    msgCtxt.setVariable("my-key", BaseEncoding.base64().encode(keyBytes));
+    byte[] keyBytes = Base16.decode(rfc6238TestKey);
+    msgCtxt.setVariable("my-key", Base64.getEncoder().encodeToString(keyBytes));
     Map<String, String> props = new HashMap<String, String>();
     props.put("key", "{my-key}");
     props.put("decode-key", "base64");
@@ -227,8 +244,8 @@ public class TestTotpCallout {
     // these values are taken from RFC 6238, p. 14
     String expectedCodeValue = "89005924";
     String fakeTime = "1234567890"; // milliseconds since epoch
-    byte[] keyBytes = BaseEncoding.base16().decode(rfc6238TestKey);
-    msgCtxt.setVariable("my-key", BaseEncoding.base64().encode(keyBytes));
+    byte[] keyBytes = Base16.decode(rfc6238TestKey);
+    msgCtxt.setVariable("my-key", Base64.getEncoder().encodeToString(keyBytes));
     Map<String, String> props = new HashMap<String, String>();
     props.put("key", "{my-key}");
     props.put("decode-key", "base64");
@@ -258,8 +275,8 @@ public class TestTotpCallout {
     // these values are taken from RFC 6238, p. 14
     String expectedCodeValue = "89005924";
     String fakeTime = "1234567890"; // milliseconds since epoch
-    byte[] keyBytes = BaseEncoding.base16().decode(rfc6238TestKey);
-    msgCtxt.setVariable("my-key", BaseEncoding.base64().encode(keyBytes));
+    byte[] keyBytes = Base16.decode(rfc6238TestKey);
+    msgCtxt.setVariable("my-key", Base64.getEncoder().encodeToString(keyBytes));
     Map<String, String> props = new HashMap<String, String>();
     props.put("key", "{my-key}");
     props.put("decode-key", "base64");
@@ -290,8 +307,8 @@ public class TestTotpCallout {
     // these values are taken from RFC 6238, p. 14
     String expectedCodeValue = "89005924";
     String fakeTime = "1234567890"; // milliseconds since epoch
-    byte[] keyBytes = BaseEncoding.base16().decode(rfc6238TestKey);
-    msgCtxt.setVariable("my-key", BaseEncoding.base64().encode(keyBytes));
+    byte[] keyBytes = Base16.decode(rfc6238TestKey);
+    msgCtxt.setVariable("my-key", Base64.getEncoder().encodeToString(keyBytes));
     Map<String, String> props = new HashMap<String, String>();
     props.put("key", "{my-key}");
     props.put("decode-key", "base64");
@@ -323,8 +340,8 @@ public class TestTotpCallout {
     // these values are taken from RFC 6238, p. 14
     String expectedCodeValue = "89005924";
     String fakeTime = "1234567890"; // milliseconds since epoch
-    byte[] keyBytes = BaseEncoding.base16().decode(rfc6238TestKey);
-    msgCtxt.setVariable("my-key", BaseEncoding.base64().encode(keyBytes));
+    byte[] keyBytes = Base16.decode(rfc6238TestKey);
+    msgCtxt.setVariable("my-key", Base64.getEncoder().encodeToString(keyBytes));
     msgCtxt.setVariable("faketime", fakeTime);
     Map<String, String> props = new HashMap<String, String>();
     props.put("key", "{my-key}");
@@ -355,8 +372,8 @@ public class TestTotpCallout {
     // these values are taken from RFC 6238, p. 14
     String expectedCodeValue = "91819424";
     String fakeTime = "1234567890"; // milliseconds since epoch
-    byte[] keyBytes = BaseEncoding.base16().decode(rfc6238TestKey);
-    msgCtxt.setVariable("my-key", BaseEncoding.base64().encode(keyBytes));
+    byte[] keyBytes = Base16.decode(rfc6238TestKey);
+    msgCtxt.setVariable("my-key", Base64.getEncoder().encodeToString(keyBytes));
     msgCtxt.setVariable("faketime", fakeTime);
     Map<String, String> props = new HashMap<String, String>();
     props.put("key", "{my-key}");

@@ -4,5 +4,5 @@
     <Property name='code-digits'>6</Property>
   </Properties>
   <ClassName>com.google.apigee.callouts.TotpCallout</ClassName>
-  <ResourceURL>java://apigee-google-authenticator-totp-20211021.jar</ResourceURL>
+  <ResourceURL>java://apigee-google-authenticator-totp-20230628.jar</ResourceURL>
 </JavaCallout>
